@@ -40,6 +40,10 @@ mahasiswa WHERE id=$id"));
         $pathGambar = "uploads/" . $namaFile;
         $tmpName = $file['tmp_name'];
         $folderTujuan = "uploads/";
+        
+        if(file_exists($data['gambar'])) {
+            unlink($data['gambar']);
+        }
 
         // Pastikan folder uploads/ ada
         if (!is_dir($folderTujuan)) {
@@ -54,7 +58,7 @@ mahasiswa WHERE id=$id"));
             echo "Upload gagal.";
         }
         mysqli_query($conn, "UPDATE mahasiswa SET nama='$nama', 
-nim='$nim' gambar='$gambar' WHERE id=$id");
+nim='$nim', gambar='$pathGambar' WHERE id=$id");
         echo "<div class='alert alert-success mt-3'>Data berhasil diupdate.</div>
         <script>
  alert('Data Berhasil Diupdate')

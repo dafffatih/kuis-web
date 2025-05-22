@@ -22,6 +22,10 @@
             <label>Gambar</label>
             <input type="file" name="gambar" accept="image/*" class="form-control" required>
         </div>
+        <div class="mb-3">
+            <label>Password</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
         <button type="submit" name="simpan" class="btn btn-success">Simpan</button>
         <a href="index.php" class="btn btn-secondary">Kembali</a>
     </form>
@@ -29,9 +33,9 @@
     if (isset($_POST['simpan'])) {
         $nama = $_POST['nama'];
         $nim = $_POST['nim'];
+        $password = $_POST['password'];
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         $file = $_FILES['gambar'];
-        $namaFile = $file['name'];
-        $pathGambar = "uploads/" . $namaFile;
         $tmpName = $file['tmp_name'];
         $folderTujuan = "uploads/";
 
@@ -41,22 +45,33 @@
         }
 
         // Simpan file
-        if (move_uploaded_file($tmpName, $folderTujuan . $namaFile)) {
-            echo "Upload berhasil!<br>";
-            echo "<img src='uploads/$namaFile' width='300'>";
+        $insert = mysqli_query($conn, "INSERT INTO mahasiswa (nama, nim, password) VALUES ('$nama', '$nim', '$passwordHash')");
+        if ($insert) {
+            $idUser = mysqli_insert_id($conn); // ambil id yang baru saja masuk
+
+            // Tentukan ekstensi file asli
+            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $namaFileBaru = $idUser . "." . $ext; // contoh: 5.jpg
+
+            $pathGambar = $folderTujuan . $namaFileBaru;
+
+            // Upload file ke folder uploads dengan nama baru
+            if (move_uploaded_file($tmpName, $pathGambar)) {
+                // Update kolom gambar di database
+                mysqli_query($conn, "UPDATE mahasiswa SET gambar='$pathGambar' WHERE id=$idUser");
+
+                echo "Upload berhasil!<br>";
+                echo "<img src='$pathGambar' width='300'>";
+                echo "<script>
+                    alert('Data Berhasil Ditambah');
+                    window.location.href = 'index.php';
+                    </script>";
+            } else {
+                echo "Upload gagal.";
+            }
         } else {
-            echo "Upload gagal.";
+            echo "Gagal menyimpan data mahasiswa.";
         }
-        mysqli_query($conn, "INSERT INTO mahasiswa (nama, nim, gambar) VALUES 
-('$nama', '$nim', '$pathGambar')");
-        echo "<div class='alert alert-success mt-3'>Data berhasil 
-disimpan.</div> 
- <script>
- alert('Data Berhasil Ditambah')
- window.location.href = 'index.php'
- 
- </script>
- ";
     }
     ?>
 </body>

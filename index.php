@@ -11,6 +11,7 @@
 
 <body class="container mt-5">
     <h2>Data Mahasiswa</h2>
+    <a href="login.php" class="btn btn-primary mb-3">Login</a>
     <a href="tambah.php" class="btn btn-primary mb-3">+ Tambah Mahasiswa</a>
     <table class="table table-bordered">
         <thead class="table-dark">
@@ -18,7 +19,7 @@
                 <th>No</th>
                 <th>Nama</th>
                 <th>NIM</th>
-                <th>Foto</th>
+                <th>Gambar</th>
                 <th>Aksi</th>
             </tr>
         </thead>
